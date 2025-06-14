@@ -7,17 +7,17 @@ class Config:
     GUILD_ID = int(os.getenv("GUILD_ID", "123456789012345678"))  # Your Discord server ID
     
     # Channel IDs
-    DRAFTS_CHANNEL_ID = int(os.getenv("DRAFTS_CHANNEL_ID", "123456789012345678"))  # Channel for drafts menu
-    FIND_CHANNEL_ID = int(os.getenv("FIND_CHANNEL_ID", "123456789012345678"))  # Channel for find menu
-    LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", "123456789012345678"))  # Channel for game logs
+    DRAFTS_CHANNEL_ID = int(os.getenv("DRAFTS_CHANNEL_ID", "1382924455222972507"))  # Channel for drafts menu
+    FIND_CHANNEL_ID = int(os.getenv("FIND_CHANNEL_ID", "1383205387179917426"))  # Channel for find menu
+    LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", "1383222242351124573"))  # Channel for game logs
     
     # Voice channel category for creating game channels
     VOICE_CATEGORY_ID = int(os.getenv("VOICE_CATEGORY_ID", "123456789012345678"))
     
     # Regional role IDs for matchmaking
-    EAST_ROLE_ID = int(os.getenv("EAST_ROLE_ID", "123456789012345678"))
-    CENTRAL_ROLE_ID = int(os.getenv("CENTRAL_ROLE_ID", "123456789012345678"))
-    WEST_ROLE_ID = int(os.getenv("WEST_ROLE_ID", "123456789012345678"))
+    EAST_ROLE_ID = int(os.getenv("EAST_ROLE_ID", "1382952554585129133"))
+    CENTRAL_ROLE_ID = int(os.getenv("CENTRAL_ROLE_ID", "1382952583533957191"))
+    WEST_ROLE_ID = int(os.getenv("WEST_ROLE_ID", "1383019932761194538"))
     
     # Game settings
     MIN_PLAYERS = int(os.getenv("MIN_PLAYERS", "2"))  # Minimum players for a game
