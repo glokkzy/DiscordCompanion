@@ -10,8 +10,8 @@ class MatchmakingManager:
         self.bot = bot
         self.regional_roles = Config.get_regional_roles()
     
-    async def handle_region_find(self, interaction, region):
-        """Handle regional player finding"""
+    async def handle_region_find(self, interaction, region, location=None):
+        """Handle regional player finding with optional location"""
         try:
             # Get the role for this region
             role_id = self.regional_roles.get(region)

@@ -154,21 +154,83 @@ class MenuManager:
         
         @discord.ui.button(label="East", style=discord.ButtonStyle.primary, emoji="🌅", custom_id="find_east")
         async def find_east(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._handle_region_find(interaction, "east")
+            await self._show_location_menu(interaction, "east")
         
         @discord.ui.button(label="Central", style=discord.ButtonStyle.primary, emoji="🌇", custom_id="find_central")
         async def find_central(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._handle_region_find(interaction, "central")
+            await self._show_location_menu(interaction, "central")
         
         @discord.ui.button(label="West", style=discord.ButtonStyle.primary, emoji="🌄", custom_id="find_west")
         async def find_west(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._handle_region_find(interaction, "west")
+            await self._show_location_menu(interaction, "west")
         
-        async def _handle_region_find(self, interaction: discord.Interaction, region: str):
-            """Handle regional player finding"""
-            await interaction.client.matchmaking_manager.handle_region_find(interaction, region)
+        async def _show_location_menu(self, interaction: discord.Interaction, region: str):
+            """Show location-specific menu for region"""
+            region_emoji = {"east": "🌅", "central": "🌇", "west": "🌄"}
+            
+            embed = discord.Embed(
+                title=f"{region_emoji.get(region, '🌍')} {region.title()} Region Locations",
+                description=f"Select a specific location in the {region.title()} region:",
+                color=discord.Color.blue()
+            )
+            
+            view = LocationMenuView(region)
+            try:
+                await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+            except discord.errors.NotFound:
+                await interaction.followup.send(embed=embed, view=view, ephemeral=True)
+        
+        async def _handle_region_find(self, interaction: discord.Interaction, region: str, location: str = None):
+            """Handle regional player finding with location"""
+            await interaction.client.matchmaking_manager.handle_region_find(interaction, region, location)
+
+class LocationMenuView(discord.ui.View):
+    def __init__(self, region):
+        super().__init__(timeout=300)  # 5 minute timeout
+        self.region = region
+        
+        # Add location-specific buttons based on region
+        if region == "east":
+            self.add_item(LocationButton("Ashburn", "ashburn", "🏢"))
+            self.add_item(LocationButton("Ohio", "ohio", "🌽"))
+        elif region == "central":
+            self.add_item(LocationButton("Iowa", "iowa", "🌾"))
+            self.add_item(LocationButton("San Antonio", "san_antonio", "🌵"))
+        elif region == "west":
+            self.add_item(LocationButton("San Francisco", "san_francisco", "🌉"))
+            self.add_item(LocationButton("Quincy", "quincy", "🏔️"))
+
+class LocationButton(discord.ui.Button):
+    def __init__(self, label, location_id, emoji):
+        super().__init__(
+            label=label,
+            style=discord.ButtonStyle.secondary,
+            emoji=emoji,
+            custom_id=f"location_{location_id}"
+        )
+        self.location_id = location_id
+        self.location_name = label
     
-    class StatsMenuView(discord.ui.View):
+    async def callback(self, interaction: discord.Interaction):
+        # Get the parent view to access region
+        view = self.view
+        region = view.region if hasattr(view, 'region') else 'unknown'
+        
+        try:
+            await interaction.client.matchmaking_manager.handle_region_find(
+                interaction, region, self.location_name
+            )
+        except Exception as e:
+            logger.error(f"Error in location button callback: {e}")
+            try:
+                await interaction.response.send_message(
+                    "❌ Error processing request. Please try again.",
+                    ephemeral=True
+                )
+            except:
+                pass
+
+class StatsMenuView(discord.ui.View):
         def __init__(self):
             super().__init__(timeout=None)  # Persistent view
         
@@ -194,31 +256,8 @@ class MenuManager:
         
         @discord.ui.button(label="Leaderboard", style=discord.ButtonStyle.success, emoji="🏆", custom_id="stats_leaderboard")
         async def leaderboard(self, interaction: discord.Interaction, button: discord.ui.Button):
-            """Show the leaderboard"""
-            leaderboard = interaction.client.stats_manager.get_leaderboard()
-            
-            embed = discord.Embed(
-                title="🏆 Leaderboard",
-                color=discord.Color.gold()
-            )
-            
-            if not leaderboard:
-                embed.description = "No games played yet!"
-                await interaction.response.send_message(embed=embed, ephemeral=True)
-                return
-            
-            description = ""
-            for i, (user_id, stats) in enumerate(leaderboard[:10], 1):
-                try:
-                    user = interaction.client.get_user(user_id)
-                    name = user.display_name if user else f"User {user_id}"
-                    win_rate = (stats['wins'] / stats['games_played']) * 100 if stats['games_played'] > 0 else 0
-                    description += f"{i}. **{name}** - {stats['wins']}W/{stats['losses']}L ({win_rate:.1f}%)\n"
-                except Exception:
-                    continue
-            
-            embed.description = description
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            """Show the leaderboard in public channel"""
+            await interaction.client.stats_manager.post_public_leaderboard(interaction)
         
         @discord.ui.button(label="Player Stats", style=discord.ButtonStyle.secondary, emoji="🔍", custom_id="stats_player_lookup")
         async def player_stats(self, interaction: discord.Interaction, button: discord.ui.Button):

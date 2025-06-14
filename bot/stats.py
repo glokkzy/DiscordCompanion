@@ -201,10 +201,51 @@ class StatsManager:
         leaderboard = []
         
         for user_id, stats in self.player_stats.items():
-            if stats['games_played'] > 0:
+            # Skip non-user entries like _comment, _format
+            if user_id.startswith('_') or not isinstance(stats, dict):
+                continue
+            if stats.get('games_played', 0) > 0:
                 leaderboard.append((int(user_id), stats))
         
         # Sort by wins, then by win rate
         leaderboard.sort(key=lambda x: (x[1]['wins'], x[1]['wins']/x[1]['games_played']), reverse=True)
         
         return leaderboard[:limit]
+    
+    async def post_public_leaderboard(self, interaction):
+        """Post leaderboard to public channel"""
+        leaderboard = self.get_leaderboard()
+        
+        embed = discord.Embed(
+            title="🏆 Current Leaderboard",
+            color=discord.Color.gold(),
+            timestamp=datetime.utcnow()
+        )
+        
+        if not leaderboard:
+            embed.description = "No games played yet!"
+        else:
+            description = ""
+            for i, (user_id, stats) in enumerate(leaderboard[:10], 1):
+                try:
+                    user = interaction.client.get_user(user_id)
+                    name = user.display_name if user else f"User {user_id}"
+                    win_rate = (stats['wins'] / stats['games_played']) * 100 if stats['games_played'] > 0 else 0
+                    description += f"{i}. **{name}** - {stats['wins']}W/{stats['losses']}L ({win_rate:.1f}%)\n"
+                except Exception:
+                    continue
+            embed.description = description
+        
+        embed.set_footer(text=f"Requested by {interaction.user.display_name}")
+        
+        # Send to leaderboard channel
+        try:
+            leaderboard_channel = interaction.guild.get_channel(Config.LEADERBOARD_CHANNEL_ID)
+            if leaderboard_channel:
+                await leaderboard_channel.send(embed=embed)
+                await interaction.response.send_message("✅ Leaderboard posted!", ephemeral=True)
+            else:
+                await interaction.response.send_message("❌ Leaderboard channel not found!", ephemeral=True)
+        except Exception as e:
+            logger.error(f"Error posting leaderboard: {e}")
+            await interaction.response.send_message("❌ Error posting leaderboard!", ephemeral=True)

@@ -1,6 +1,6 @@
 {
   "_comment": "This file stores the game log with numbered games and results.",
-  "last_game_number": 2,
+  "last_game_number": 3,
   "games": [
     {
       "game_number": 1,
@@ -34,6 +34,32 @@
         {
           "id": 789660683838554122,
           "name": "eddy"
+        }
+      ],
+      "winner": null
+    },
+    {
+      "game_number": 3,
+      "timestamp": "2025-06-14T03:08:49.179139",
+      "status": "started",
+      "team1": [
+        {
+          "id": 1093315609040797746,
+          "name": "glokkzy"
+        },
+        {
+          "id": 494999614953619498,
+          "name": "Braex"
+        }
+      ],
+      "team2": [
+        {
+          "id": 789660683838554122,
+          "name": "eddy"
+        },
+        {
+          "id": 759183917588414496,
+          "name": "TAE1X"
         }
       ],
       "winner": null
