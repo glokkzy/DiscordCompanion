@@ -11,6 +11,7 @@ from bot.voice_manager import VoiceManager
 from bot.stats import StatsManager
 from bot.matchmaking import MatchmakingManager
 from bot.profiles import ProfileManager
+from bot.admin import AdminManager
 
 # Load environment variables
 load_dotenv()
@@ -47,6 +48,7 @@ class GameBot(commands.Bot):
         self.stats_manager = StatsManager(self)
         self.matchmaking_manager = MatchmakingManager(self)
         self.profile_manager = ProfileManager(self)
+        self.admin_manager = AdminManager(self)
         
         # Store active games
         self.active_games = {}
@@ -99,7 +101,8 @@ class GameBot(commands.Bot):
             host_setup_channel = guild.get_channel(Config.HOST_SETUP_CHANNEL_ID)
             if host_setup_channel and not await self._has_bot_menu(host_setup_channel):
                 await self.profile_manager.send_host_setup_menu(host_setup_channel)
-                logger.info("Sent host setup menu to channel")
+                await self.admin_manager.send_admin_panel(host_setup_channel)
+                logger.info("Sent host setup and admin panel to channel")
                 
         except Exception as e:
             logger.error(f"Error sending startup menus: {e}")

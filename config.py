@@ -13,9 +13,13 @@ class Config:
     STATS_CHANNEL_ID = int(os.getenv("STATS_CHANNEL_ID", "1383280034596257893"))  # Channel for stats menu
     LEADERBOARD_CHANNEL_ID = int(os.getenv("LEADERBOARD_CHANNEL_ID", "1383282603150409769"))  # Channel for public leaderboard
     HOST_SETUP_CHANNEL_ID = int(os.getenv("HOST_SETUP_CHANNEL_ID", "1383426733495029910"))  # Channel for host setup menu
+    ADMIN_PANEL_CHANNEL_ID = int(os.getenv("ADMIN_PANEL_CHANNEL_ID", "1383426733495029910"))  # Channel for admin panel (same as host setup)
+    BOT_LOGS_CHANNEL_ID = int(os.getenv("BOT_LOGS_CHANNEL_ID", "1383431971086274581"))  # Channel for bot usage logs
     
-    # Admin user ID
+    # Admin and role IDs
     ADMIN_USER_ID = int(os.getenv("ADMIN_USER_ID", "1093315609040797746"))  # Your user ID
+    HOST_ROLE_ID = int(os.getenv("HOST_ROLE_ID", "966546711545778236"))  # Host role ID
+    MANAGEMENT_ROLE_ID = int(os.getenv("MANAGEMENT_ROLE_ID", "1383431093562380358"))  # Management role ID
     
     # Voice channel category for creating game channels
     VOICE_CATEGORY_ID = int(os.getenv("VOICE_CATEGORY_ID", "123456789012345678"))

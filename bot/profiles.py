@@ -58,8 +58,8 @@ class ProfileManager:
         except Exception as e:
             logger.error(f"Error saving profiles: {e}")
     
-    def add_host(self, host_id, in_game_name):
-        """Add a host to the whitelist"""
+    async def add_host(self, host_id, in_game_name, guild):
+        """Add a host to the whitelist and assign role"""
         if str(host_id) not in self.whitelist["hosts"]:
             self.whitelist["hosts"].append(str(host_id))
             self._save_whitelist()
@@ -70,6 +70,16 @@ class ProfileManager:
             "is_host": True
         }
         self._save_profiles()
+        
+        # Assign host role
+        try:
+            member = guild.get_member(host_id)
+            if member:
+                host_role = guild.get_role(Config.HOST_ROLE_ID)
+                if host_role and host_role not in member.roles:
+                    await member.add_roles(host_role)
+        except Exception as e:
+            logger.error(f"Error adding host role: {e}")
     
     def is_whitelisted(self, user_id):
         """Check if user is whitelisted (either host or has profile)"""
@@ -146,7 +156,7 @@ class HostSetupModal(discord.ui.Modal, title="Host Setup"):
             game_name = self.in_game_name.value.strip()
             
             # Add to whitelist and profile
-            interaction.client.profile_manager.add_host(host_user_id, game_name)
+            await interaction.client.profile_manager.add_host(host_user_id, game_name, interaction.guild)
             
             embed = discord.Embed(
                 title="✅ Host Added Successfully",

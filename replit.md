@@ -82,3 +82,12 @@ Changelog:
   - Voice channel management and cleanup
   - Persistent button interactions with custom IDs
   - Bot successfully connected and operational
+- June 14, 2025: Major feature updates and fixes:
+  - Fixed duplicate menu sending on startup with detection system
+  - Corrected leaderboard to post to public channel (1383282603150409769)
+  - Added host setup system with profile management
+  - Implemented user whitelist system based on host authorization
+  - Created regional location sub-menus (East: Ashburn/Ohio, Central: Iowa/San Antonio, West: San Francisco/Quincy)
+  - Added in-game name storage and display in matchmaking notifications
+  - Integrated profile verification for all bot interactions
+  - Admin-only host setup menu in channel 1383426733495029910

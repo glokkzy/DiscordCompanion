@@ -79,9 +79,10 @@ class MatchmakingManager:
         emoji = region_emoji.get(region, "🌍")
         
         location_text = f" ({location})" if location else ""
+        in_game_name = self.bot.profile_manager.get_in_game_name(requester.id)
         embed = discord.Embed(
             title=f"{emoji} Player Looking for Game!",
-            description=f"**{requester.display_name}** is looking for players in the **{region.title()}{location_text}** region!",
+            description=f"**{requester.display_name}** ({in_game_name}) is looking for players in the **{region.title()}{location_text}** region!",
             color=discord.Color.blue()
         )
         

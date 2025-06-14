@@ -158,14 +158,32 @@ class FindMenuView(discord.ui.View):
     
     @discord.ui.button(label="East", style=discord.ButtonStyle.primary, emoji="🌅", custom_id="find_east")
     async def find_east(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not interaction.client.profile_manager.is_whitelisted(interaction.user.id):
+            await interaction.response.send_message(
+                "❌ You need to be added by a host to use this bot. Contact an administrator.",
+                ephemeral=True
+            )
+            return
         await self._show_location_menu(interaction, "east")
     
     @discord.ui.button(label="Central", style=discord.ButtonStyle.primary, emoji="🌇", custom_id="find_central")
     async def find_central(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not interaction.client.profile_manager.is_whitelisted(interaction.user.id):
+            await interaction.response.send_message(
+                "❌ You need to be added by a host to use this bot. Contact an administrator.",
+                ephemeral=True
+            )
+            return
         await self._show_location_menu(interaction, "central")
     
     @discord.ui.button(label="West", style=discord.ButtonStyle.primary, emoji="🌄", custom_id="find_west")
     async def find_west(self, interaction: discord.Interaction, button: discord.ui.Button):
+        if not interaction.client.profile_manager.is_whitelisted(interaction.user.id):
+            await interaction.response.send_message(
+                "❌ You need to be added by a host to use this bot. Contact an administrator.",
+                ephemeral=True
+            )
+            return
         await self._show_location_menu(interaction, "west")
     
     async def _show_location_menu(self, interaction: discord.Interaction, region: str):
