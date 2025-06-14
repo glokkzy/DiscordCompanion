@@ -42,16 +42,17 @@ class MatchmakingManager:
             
             # Send confirmation to the user
             region_emoji = {"east": "🌅", "central": "🌇", "west": "🌄"}
+            location_text = f" ({location})" if location else ""
             try:
                 await interaction.response.send_message(
-                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}** region...\n"
+                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}{location_text}** region...\n"
                     f"Sending DMs to {len(members_with_role)} players!",
                     ephemeral=True
                 )
             except discord.errors.NotFound:
                 # Interaction expired, try followup
                 await interaction.followup.send(
-                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}** region...\n"
+                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}{location_text}** region...\n"
                     f"Sending DMs to {len(members_with_role)} players!",
                     ephemeral=True
                 )
@@ -61,7 +62,8 @@ class MatchmakingManager:
                 interaction.user, 
                 members_with_role, 
                 region,
-                interaction.guild
+                interaction.guild,
+                location
             )
             
         except Exception as e:
@@ -71,14 +73,15 @@ class MatchmakingManager:
                 ephemeral=True
             )
     
-    async def _send_region_notifications(self, requester, members, region, guild):
+    async def _send_region_notifications(self, requester, members, region, guild, location=None):
         """Send DM notifications to regional players"""
         region_emoji = {"east": "🌅", "central": "🌇", "west": "🌄"}
         emoji = region_emoji.get(region, "🌍")
         
+        location_text = f" ({location})" if location else ""
         embed = discord.Embed(
             title=f"{emoji} Player Looking for Game!",
-            description=f"**{requester.display_name}** is looking for players in the **{region.title()}** region!",
+            description=f"**{requester.display_name}** is looking for players in the **{region.title()}{location_text}** region!",
             color=discord.Color.blue()
         )
         

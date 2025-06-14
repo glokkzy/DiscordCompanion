@@ -86,10 +86,10 @@ class MenuManager:
             inline=True
         )
         
-        view = self.StatsMenuView()
+        view = StatsMenuView()
         await channel.send(embed=embed, view=view)
-    
-    class DraftsMenuView(discord.ui.View):
+
+class DraftsMenuView(discord.ui.View):
         def __init__(self):
             super().__init__(timeout=None)  # Persistent view
         
