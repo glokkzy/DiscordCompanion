@@ -96,6 +96,14 @@ class DraftsMenuView(discord.ui.View):
     @discord.ui.button(label="Create Game", style=discord.ButtonStyle.green, emoji="📝", custom_id="drafts_create_game")
     async def create_game(self, interaction: discord.Interaction, button: discord.ui.Button):
         """Handle create game button"""
+        # Check if user is whitelisted
+        if not interaction.client.profile_manager.is_whitelisted(interaction.user.id):
+            await interaction.response.send_message(
+                "❌ You need to be added by a host to use this bot. Contact an administrator.",
+                ephemeral=True
+            )
+            return
+            
         if not interaction.user.voice or not interaction.user.voice.channel:
             await interaction.response.send_message(
                 "❌ You must be in a voice channel to create a game!",

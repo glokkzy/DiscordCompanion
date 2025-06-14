@@ -10,6 +10,7 @@ from bot.drafts import DraftManager
 from bot.voice_manager import VoiceManager
 from bot.stats import StatsManager
 from bot.matchmaking import MatchmakingManager
+from bot.profiles import ProfileManager
 
 # Load environment variables
 load_dotenv()
@@ -45,6 +46,7 @@ class GameBot(commands.Bot):
         self.voice_manager = VoiceManager(self)
         self.stats_manager = StatsManager(self)
         self.matchmaking_manager = MatchmakingManager(self)
+        self.profile_manager = ProfileManager(self)
         
         # Store active games
         self.active_games = {}
@@ -55,9 +57,11 @@ class GameBot(commands.Bot):
         
         # Add views that need to persist across restarts
         from bot.menus import DraftsMenuView, FindMenuView, StatsMenuView
+        from bot.profiles import HostSetupView
         self.add_view(DraftsMenuView())
         self.add_view(FindMenuView())
         self.add_view(StatsMenuView())
+        self.add_view(HostSetupView())
         
     async def on_ready(self):
         """Called when the bot is ready"""
@@ -75,26 +79,40 @@ class GameBot(commands.Bot):
                 logger.error("Could not find configured guild")
                 return
                 
-            # Send drafts menu
+            # Check for existing menus and only send if needed
             drafts_channel = guild.get_channel(Config.DRAFTS_CHANNEL_ID)
-            if drafts_channel:
+            if drafts_channel and not await self._has_bot_menu(drafts_channel):
                 await self.menu_manager.send_drafts_menu(drafts_channel)
                 logger.info("Sent drafts menu to channel")
                 
-            # Send find menu
             find_channel = guild.get_channel(Config.FIND_CHANNEL_ID)
-            if find_channel:
+            if find_channel and not await self._has_bot_menu(find_channel):
                 await self.menu_manager.send_find_menu(find_channel)
                 logger.info("Sent find menu to channel")
                 
-            # Send stats menu
             stats_channel = guild.get_channel(Config.STATS_CHANNEL_ID)
-            if stats_channel:
+            if stats_channel and not await self._has_bot_menu(stats_channel):
                 await self.menu_manager.send_stats_menu(stats_channel)
                 logger.info("Sent stats menu to channel")
                 
+            # Send host setup menu (admin only channel)
+            host_setup_channel = guild.get_channel(Config.HOST_SETUP_CHANNEL_ID)
+            if host_setup_channel and not await self._has_bot_menu(host_setup_channel):
+                await self.profile_manager.send_host_setup_menu(host_setup_channel)
+                logger.info("Sent host setup menu to channel")
+                
         except Exception as e:
             logger.error(f"Error sending startup menus: {e}")
+    
+    async def _has_bot_menu(self, channel):
+        """Check if channel already has a bot menu"""
+        try:
+            async for message in channel.history(limit=20):
+                if message.author == self.user and message.embeds:
+                    return True
+            return False
+        except Exception:
+            return False
     
     async def on_voice_state_update(self, member, before, after):
         """Handle voice state changes"""
