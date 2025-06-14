@@ -86,6 +86,12 @@ class GameBot(commands.Bot):
                 await self.menu_manager.send_find_menu(find_channel)
                 logger.info("Sent find menu to channel")
                 
+            # Send stats menu
+            stats_channel = guild.get_channel(Config.STATS_CHANNEL_ID)
+            if stats_channel:
+                await self.menu_manager.send_stats_menu(stats_channel)
+                logger.info("Sent stats menu to channel")
+                
         except Exception as e:
             logger.error(f"Error sending startup menus: {e}")
     
