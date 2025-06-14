@@ -1,0 +1,24 @@
+{
+  "_comment": "This file stores the game log with numbered games and results.",
+  "last_game_number": 0,
+  "games": [],
+  "_format": {
+    "games": [
+      {
+        "game_number": 1,
+        "timestamp": "2025-06-14T12:00:00Z",
+        "status": "completed",
+        "team1": [
+          {"id": 123456789, "name": "Player1"},
+          {"id": 987654321, "name": "Player2"}
+        ],
+        "team2": [
+          {"id": 111222333, "name": "Player3"},
+          {"id": 444555666, "name": "Player4"}
+        ],
+        "winner": 1,
+        "end_timestamp": "2025-06-14T12:30:00Z"
+      }
+    ]
+  }
+}

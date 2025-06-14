@@ -1,0 +1,10 @@
+{
+  "_comment": "This file stores player statistics. It will be automatically populated as games are played.",
+  "_format": {
+    "user_id": {
+      "games_played": 0,
+      "wins": 0,
+      "losses": 0
+    }
+  }
+}
