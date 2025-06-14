@@ -56,6 +56,7 @@ class GameBot(commands.Bot):
         # Add views that need to persist across restarts
         self.add_view(self.menu_manager.DraftsMenuView())
         self.add_view(self.menu_manager.FindMenuView())
+        self.add_view(self.menu_manager.StatsMenuView())
         
     async def on_ready(self):
         """Called when the bot is ready"""

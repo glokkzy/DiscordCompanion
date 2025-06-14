@@ -10,6 +10,7 @@ class Config:
     DRAFTS_CHANNEL_ID = int(os.getenv("DRAFTS_CHANNEL_ID", "1382924455222972507"))  # Channel for drafts menu
     FIND_CHANNEL_ID = int(os.getenv("FIND_CHANNEL_ID", "1383205387179917426"))  # Channel for find menu
     LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID", "1383222242351124573"))  # Channel for game logs
+    STATS_CHANNEL_ID = int(os.getenv("STATS_CHANNEL_ID", "1383280034596257893"))  # Channel for stats menu
     
     # Voice channel category for creating game channels
     VOICE_CATEGORY_ID = int(os.getenv("VOICE_CATEGORY_ID", "123456789012345678"))

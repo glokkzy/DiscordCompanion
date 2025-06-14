@@ -112,7 +112,11 @@ class DraftManager:
             )
             
             view = self.GameControlView(game_id)
-            await interaction.edit_original_response(embed=embed, view=view)
+            try:
+                await interaction.edit_original_response(embed=embed, view=view)
+            except discord.errors.NotFound:
+                # Interaction expired, send new message
+                await interaction.followup.send(embed=embed, view=view)
             
         except Exception as e:
             logger.error(f"Error starting game: {e}")
@@ -182,13 +186,27 @@ class DraftManager:
             super().__init__(timeout=None)  # Persistent view
             self.game_id = game_id
         
-        @discord.ui.button(label="Team 1 Wins", style=discord.ButtonStyle.success, emoji="🔴", custom_id="game_team1_wins")
-        async def team1_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._handle_game_end(interaction, 1)
-        
-        @discord.ui.button(label="Team 2 Wins", style=discord.ButtonStyle.success, emoji="🔵", custom_id="game_team2_wins")
-        async def team2_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
-            await self._handle_game_end(interaction, 2)
+        @discord.ui.button(label="End Game", style=discord.ButtonStyle.primary, emoji="🏁", custom_id="game_end")
+        async def end_game(self, interaction: discord.Interaction, button: discord.ui.Button):
+            """Show end game options with team selection"""
+            if self.game_id not in interaction.client.active_games:
+                await interaction.response.send_message(
+                    "❌ This game is no longer active.",
+                    ephemeral=True
+                )
+                return
+            
+            embed = discord.Embed(
+                title="🏁 End Game",
+                description="Which team won the game?",
+                color=discord.Color.orange()
+            )
+            
+            view = WinnerSelectionView(self.game_id)
+            try:
+                await interaction.response.send_message(embed=embed, view=view, ephemeral=True)
+            except discord.errors.NotFound:
+                await interaction.followup.send(embed=embed, view=view, ephemeral=True)
         
         @discord.ui.button(label="Cancel Game", style=discord.ButtonStyle.danger, emoji="❌", custom_id="game_cancel")
         async def cancel_game(self, interaction: discord.Interaction, button: discord.ui.Button):
@@ -240,3 +258,67 @@ class DraftManager:
                 )
             
             await interaction.response.edit_message(embed=embed, view=None)
+
+
+class WinnerSelectionView(discord.ui.View):
+    def __init__(self, game_id):
+        super().__init__(timeout=300)  # 5 minute timeout
+        self.game_id = game_id
+    
+    @discord.ui.button(label="Team 1 Wins", style=discord.ButtonStyle.success, emoji="🔴", custom_id="winner_team1")
+    async def team1_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self._handle_winner_selection(interaction, 1)
+    
+    @discord.ui.button(label="Team 2 Wins", style=discord.ButtonStyle.success, emoji="🔵", custom_id="winner_team2")
+    async def team2_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await self._handle_winner_selection(interaction, 2)
+    
+    async def _handle_winner_selection(self, interaction: discord.Interaction, winner: int):
+        """Handle winner selection and end the game"""
+        if self.game_id not in interaction.client.active_games:
+            await interaction.response.send_message(
+                "❌ This game is no longer active.",
+                ephemeral=True
+            )
+            return
+        
+        game_data = interaction.client.active_games[self.game_id]
+        
+        # Update stats
+        await interaction.client.stats_manager.update_game_stats(game_data, winner)
+        
+        # Log game end
+        await interaction.client.stats_manager.log_game_end(
+            interaction.guild, game_data, winner
+        )
+        
+        # Clean up voice channels
+        await interaction.client.voice_manager.cleanup_game_channels(
+            interaction.guild, game_data
+        )
+        
+        # Remove from active games
+        del interaction.client.active_games[self.game_id]
+        
+        # Send confirmation
+        winning_team = "Team 1" if winner == 1 else "Team 2"
+        await interaction.response.send_message(
+            f"🎉 **{winning_team} Wins!** Game #{game_data['game_number']} has ended.\n"
+            f"Players have been moved back and channels cleaned up.",
+            ephemeral=True
+        )
+        
+        # Update the original game message to show it's ended
+        try:
+            # Find the original message and update it
+            channel = interaction.client.get_channel(Config.DRAFTS_CHANNEL_ID)
+            if channel:
+                embed = discord.Embed(
+                    title=f"🎉 Game #{game_data['game_number']} Complete - {winning_team} Wins!",
+                    description="This game has ended and all players have been moved back.",
+                    color=discord.Color.gold()
+                )
+                # Send a new message since we can't easily find the original
+                await channel.send(embed=embed)
+        except Exception as e:
+            logger.error(f"Error updating game completion message: {e}")

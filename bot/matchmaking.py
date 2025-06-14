@@ -42,11 +42,19 @@ class MatchmakingManager:
             
             # Send confirmation to the user
             region_emoji = {"east": "🌅", "central": "🌇", "west": "🌄"}
-            await interaction.response.send_message(
-                f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}** region...\n"
-                f"Sending DMs to {len(members_with_role)} players!",
-                ephemeral=True
-            )
+            try:
+                await interaction.response.send_message(
+                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}** region...\n"
+                    f"Sending DMs to {len(members_with_role)} players!",
+                    ephemeral=True
+                )
+            except discord.errors.NotFound:
+                # Interaction expired, try followup
+                await interaction.followup.send(
+                    f"{region_emoji.get(region, '🌍')} Looking for players in the **{region.title()}** region...\n"
+                    f"Sending DMs to {len(members_with_role)} players!",
+                    ephemeral=True
+                )
             
             # Send DMs to all members with the role
             await self._send_region_notifications(
