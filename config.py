@@ -4,7 +4,7 @@ class Config:
     """Configuration class for the Discord bot"""
     
     # Discord IDs - These should be set in your environment or updated here
-    GUILD_ID = int(os.getenv("GUILD_ID", "123456789012345678"))  # Your Discord server ID
+    GUILD_ID = int(os.getenv("GUILD_ID", "1374939590498193438"))  # Your Discord server ID
     
     # Channel IDs
     DRAFTS_CHANNEL_ID = int(os.getenv("DRAFTS_CHANNEL_ID", "1382924455222972507"))  # Channel for drafts menu

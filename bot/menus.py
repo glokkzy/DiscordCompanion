@@ -64,7 +64,7 @@ class MenuManager:
         def __init__(self):
             super().__init__(timeout=None)  # Persistent view
         
-        @discord.ui.button(label="Create Game", style=discord.ButtonStyle.green, emoji="📝")
+        @discord.ui.button(label="Create Game", style=discord.ButtonStyle.green, emoji="📝", custom_id="drafts_create_game")
         async def create_game(self, interaction: discord.Interaction, button: discord.ui.Button):
             """Handle create game button"""
             # Check if user is in a voice channel
@@ -88,7 +88,7 @@ class MenuManager:
             # Start the draft process
             await interaction.client.draft_manager.start_draft(interaction, voice_channel, members)
         
-        @discord.ui.button(label="View Games", style=discord.ButtonStyle.secondary, emoji="👁️")
+        @discord.ui.button(label="View Games", style=discord.ButtonStyle.secondary, emoji="👁️", custom_id="drafts_view_games")
         async def view_games(self, interaction: discord.Interaction, button: discord.ui.Button):
             """Handle view games button"""
             active_games = interaction.client.active_games
@@ -123,15 +123,15 @@ class MenuManager:
         def __init__(self):
             super().__init__(timeout=None)  # Persistent view
         
-        @discord.ui.button(label="East", style=discord.ButtonStyle.primary, emoji="🌅")
+        @discord.ui.button(label="East", style=discord.ButtonStyle.primary, emoji="🌅", custom_id="find_east")
         async def find_east(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_region_find(interaction, "east")
         
-        @discord.ui.button(label="Central", style=discord.ButtonStyle.primary, emoji="🌇")
+        @discord.ui.button(label="Central", style=discord.ButtonStyle.primary, emoji="🌇", custom_id="find_central")
         async def find_central(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_region_find(interaction, "central")
         
-        @discord.ui.button(label="West", style=discord.ButtonStyle.primary, emoji="🌄")
+        @discord.ui.button(label="West", style=discord.ButtonStyle.primary, emoji="🌄", custom_id="find_west")
         async def find_west(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_region_find(interaction, "west")
         

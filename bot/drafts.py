@@ -128,7 +128,7 @@ class DraftManager:
             self.team1 = team1
             self.team2 = team2
         
-        @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger, emoji="❌")
+        @discord.ui.button(label="Cancel", style=discord.ButtonStyle.danger, emoji="❌", custom_id="draft_cancel")
         async def cancel_draft(self, interaction: discord.Interaction, button: discord.ui.Button):
             embed = discord.Embed(
                 title="❌ Draft Cancelled",
@@ -137,7 +137,7 @@ class DraftManager:
             )
             await interaction.response.edit_message(embed=embed, view=None)
         
-        @discord.ui.button(label="Reroll Teams", style=discord.ButtonStyle.secondary, emoji="🎲")
+        @discord.ui.button(label="Reroll Teams", style=discord.ButtonStyle.secondary, emoji="🎲", custom_id="draft_reroll")
         async def reroll_teams(self, interaction: discord.Interaction, button: discord.ui.Button):
             # Reroll teams
             all_members = self.team1 + self.team2
@@ -171,7 +171,7 @@ class DraftManager:
             
             await interaction.response.edit_message(embed=embed, view=self)
         
-        @discord.ui.button(label="Start Game", style=discord.ButtonStyle.success, emoji="🚀")
+        @discord.ui.button(label="Start Game", style=discord.ButtonStyle.success, emoji="🚀", custom_id="draft_start_game")
         async def start_game(self, interaction: discord.Interaction, button: discord.ui.Button):
             await interaction.client.draft_manager.start_game(
                 interaction, self.voice_channel, self.team1, self.team2
@@ -182,15 +182,15 @@ class DraftManager:
             super().__init__(timeout=None)  # Persistent view
             self.game_id = game_id
         
-        @discord.ui.button(label="Team 1 Wins", style=discord.ButtonStyle.success, emoji="🔴")
+        @discord.ui.button(label="Team 1 Wins", style=discord.ButtonStyle.success, emoji="🔴", custom_id="game_team1_wins")
         async def team1_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_game_end(interaction, 1)
         
-        @discord.ui.button(label="Team 2 Wins", style=discord.ButtonStyle.success, emoji="🔵")
+        @discord.ui.button(label="Team 2 Wins", style=discord.ButtonStyle.success, emoji="🔵", custom_id="game_team2_wins")
         async def team2_wins(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_game_end(interaction, 2)
         
-        @discord.ui.button(label="Cancel Game", style=discord.ButtonStyle.danger, emoji="❌")
+        @discord.ui.button(label="Cancel Game", style=discord.ButtonStyle.danger, emoji="❌", custom_id="game_cancel")
         async def cancel_game(self, interaction: discord.Interaction, button: discord.ui.Button):
             await self._handle_game_end(interaction, 0)  # 0 = cancelled
         

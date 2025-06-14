@@ -73,4 +73,12 @@ Preferred communication style: Simple, everyday language.
 # Changelog
 
 Changelog:
-- June 14, 2025. Initial setup
+- June 14, 2025: Initial setup and architecture design
+- June 14, 2025: Complete Discord bot implementation with all requested features:
+  - Drafts menu with team creation, reroll, and game management
+  - Find menu with regional matchmaking (East/Central/West)
+  - Win/loss statistics tracking system
+  - Game logging with numbered games
+  - Voice channel management and cleanup
+  - Persistent button interactions with custom IDs
+  - Bot successfully connected and operational
